@@ -9,11 +9,21 @@ app.get('/info', (request, response) => {
   response.send(
     `<b>Phonebook contains info for ${data.length} people</b><p>${date}</p>`
   )
-  console.log(response)
 })
 
 app.get('/api/persons', (request, response) => {
   response.json(data)
+})
+
+app.get('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id)
+  const person = data.find(person => person.id === id)
+
+  if (person) {
+    response.json(person)
+  } else {
+    response.status(404).end()
+  }
 })
 
 const PORT = 3001
