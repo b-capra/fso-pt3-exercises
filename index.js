@@ -4,6 +4,14 @@ const app = express()
 
 app.use(express.json())
 
+app.get('/info', (request, response) => {
+  let date = new Date()
+  response.send(
+    `<b>Phonebook contains info for ${data.length} people</b><p>${date}</p>`
+  )
+  console.log(response)
+})
+
 app.get('/api/persons', (request, response) => {
   response.json(data)
 })
