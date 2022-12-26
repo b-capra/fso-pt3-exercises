@@ -39,6 +39,24 @@ const generateId = () => {
 app.post('/api/persons', (request, response) => {
   const body = request.body
 
+  if (!body.name) {
+    return response.status(400).json({
+      error: 'Entry must include a name'
+    })
+  }
+
+  if (!body.number) {
+    return response.status(400).json({
+      error: 'Entry must include a number'
+    })
+  }
+
+  if (data.map(person => person.name).includes(body.name)) {
+    return response.status(400).json({
+      error: 'Entry name must be unique'
+    })
+  }
+
   const newPerson = {
     id: generateId(),
     name: body.name,
