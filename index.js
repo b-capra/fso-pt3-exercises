@@ -1,22 +1,12 @@
 const express = require('express')
-const morgan = require('morgan')
+const cors = require('cors')
 let data = require('./data.json')
 
 const app = express()
 
+app.use(cors())
+
 app.use(express.json())
-
-// MORGAN LOGGER
-
-morgan.token('data', (req, res) => {
-  const {body} = req
-  if (Object.keys(body).length === 0) return
-  return JSON.stringify(body)
-})
-
-app.use(
-  morgan(':method :url :status :res[content-length] - :response-time ms. Data: :data')
-)
 
 // ROUTES
 
@@ -86,8 +76,7 @@ app.post('/api/persons', (request, response) => {
 
 // PORT LISTENER
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
-  console.debug('App listening on :3001')
 })
