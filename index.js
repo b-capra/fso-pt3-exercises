@@ -1,8 +1,13 @@
 const express = require('express')
+const morgan = require('morgan')
 let data = require('./data.json')
+
 const app = express()
 
 app.use(express.json())
+app.use(morgan('tiny'))
+
+// ROUTES
 
 app.get('/info', (request, response) => {
   let date = new Date()
@@ -68,7 +73,10 @@ app.post('/api/persons', (request, response) => {
   response.json(newPerson)
 })
 
+// PORT LISTENER
+
 const PORT = 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
+  console.debug('App listening on :3001')
 })
