@@ -19,7 +19,6 @@
   },
   "homepage": "https://github.com/b-capra/fso-pt3-exercises#readme",
   "dependencies": {
-    "cors": "^2.8.5",
     "express": "^4.18.2",
     "morgan": "^1.10.0"
   },
