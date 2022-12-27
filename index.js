@@ -5,7 +5,18 @@ let data = require('./data.json')
 const app = express()
 
 app.use(express.json())
-app.use(morgan('tiny'))
+
+// MORGAN LOGGER
+
+morgan.token('data', (req, res) => {
+  const {body} = req
+  if (Object.keys(body).length === 0) return
+  return JSON.stringify(body)
+})
+
+app.use(
+  morgan(':method :url :status :res[content-length] - :response-time ms. Data: :data')
+)
 
 // ROUTES
 
