@@ -1,11 +1,12 @@
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
 let data = require('./data.json')
 
 const app = express()
 
 app.use(express.json())
-
+app.use(cors())
 // MORGAN LOGGER
 
 morgan.token('data', (req, res) => {
