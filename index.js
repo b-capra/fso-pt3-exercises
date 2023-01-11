@@ -7,6 +7,8 @@ const app = express()
 
 app.use(express.json())
 app.use(cors())
+app.use(express.static('build'))
+
 // MORGAN LOGGER
 
 morgan.token('data', (req, res) => {
@@ -90,5 +92,4 @@ app.post('/api/persons', (request, response) => {
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
-  console.debug('App listening on :3001')
 })
