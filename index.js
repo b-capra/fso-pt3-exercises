@@ -1,9 +1,11 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
-let data = require('./data.json')
+const Person = require('./models/person')
 
 const app = express()
+const PORT = process.env.PORT
 
 app.use(express.json())
 app.use(cors())
@@ -23,41 +25,46 @@ app.use(
 
 // ROUTES
 
+// Info
 app.get('/info', (request, response) => {
   let date = new Date()
-  response.send(
-    `<b>Phonebook contains info for ${data.length} people</b><p>${date}</p>`
-  )
+  Person.find({}).then(people => {
+    response.send(
+      `<b>Phonebook contains info for ${people.length} people</b><p>${date}</p>`  
+    )
+  })
 })
 
+// Fetch All
 app.get('/api/persons', (request, response) => {
-  response.json(data)
+  Person.find({}).then(people => {
+    response.json(people)
+  })
 })
 
+// Fetch by ID
 app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const person = data.find(person => person.id === id)
-
-  if (person) {
-    response.json(person)
-  } else {
-    response.status(404).end()
-  }
+  Person.findById(request.params.id)
+    .then(person => {
+      response.json(person)
+    })
+    .catch((error) => {
+      console.log('Error finding phonebook entry', error)
+      response.status(404).end()
+    })
 })
 
+// Delete
 app.delete('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
   data = data.filter(person => person.id !== id)
   response.status(204).end()
 })
 
-const generateId = () => {
-  return Math.floor(Math.random() * (100 - data.length + 1) + data.length)
-}
-
+// Create/Update
 app.post('/api/persons', (request, response) => {
   const body = request.body
-
+  
   if (!body.name) {
     return response.status(400).json({
       error: 'Entry must include a name'
@@ -70,26 +77,17 @@ app.post('/api/persons', (request, response) => {
     })
   }
 
-  if (data.map(person => person.name).includes(body.name)) {
-    return response.status(400).json({
-      error: 'Entry name must be unique'
-    })
-  }
-
-  const newPerson = {
-    id: generateId(),
+  const person = new Person({
     name: body.name,
     number: body.number
-  }
+  })
 
-  data = data.concat(newPerson)
-
-  response.json(newPerson)
+  person.save().then(newPerson => {
+    response.json(newPerson)
+  })
 })
 
 // PORT LISTENER
-
-const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
