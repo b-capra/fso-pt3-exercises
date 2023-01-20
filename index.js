@@ -43,7 +43,7 @@ app.get('/api/persons', (request, response) => {
 })
 
 // Fetch by ID
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
   Person.findById(request.params.id)
     .then(person => {
       if (person) {
@@ -52,10 +52,7 @@ app.get('/api/persons/:id', (request, response) => {
         response.status(404).end()
       }
     })
-    .catch((error) => {
-      console.log(error)
-      response.status(400).send({ error: 'Malformatted ID'})
-    })
+    .catch(error => next(error))
 })
 
 // Delete
@@ -64,10 +61,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
     .then(result => {
       response.status(204).end()
     })
-    .catch((error) => {
-      console.log(error)
-      response.status(400).send({ error: 'Malformatted ID'})
-    })
+    .catch(error => next(error))
 })
 
 // Create
@@ -97,7 +91,7 @@ app.post('/api/persons', (request, response) => {
 })
 
 // Update
-app.put('/api/persons/:id', (request, response) => {
+app.put('/api/persons/:id', (request, response, next) => {
   const body = request.body
 
   const person = {
@@ -109,8 +103,27 @@ app.put('/api/persons/:id', (request, response) => {
     .then(updatedPerson => {
       response.json(updatedPerson)
     })
-    .catch(error => console.log(error))
+    .catch(error => next(error))
 })
+
+// ERROR HANDLERS
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'Unknown endpoint'})
+}
+
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'Malformatted ID'})
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 // PORT LISTENER
 app.listen(PORT, () => {
