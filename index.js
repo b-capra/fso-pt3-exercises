@@ -46,22 +46,31 @@ app.get('/api/persons', (request, response) => {
 app.get('/api/persons/:id', (request, response) => {
   Person.findById(request.params.id)
     .then(person => {
-      response.json(person)
+      if (person) {
+        response.json(person)
+      } else {
+        response.status(404).end()
+      }
     })
     .catch((error) => {
-      console.log('Error finding phonebook entry', error)
-      response.status(404).end()
+      console.log(error)
+      response.status(400).send({ error: 'Malformatted ID'})
     })
 })
 
 // Delete
-app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  data = data.filter(person => person.id !== id)
-  response.status(204).end()
+app.delete('/api/persons/:id', (request, response, next) => {
+  Person.findByIdAndRemove(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch((error) => {
+      console.log(error)
+      response.status(400).send({ error: 'Malformatted ID'})
+    })
 })
 
-// Create/Update
+// Create
 app.post('/api/persons', (request, response) => {
   const body = request.body
   
@@ -85,6 +94,22 @@ app.post('/api/persons', (request, response) => {
   person.save().then(newPerson => {
     response.json(newPerson)
   })
+})
+
+// Update
+app.put('/api/persons/:id', (request, response) => {
+  const body = request.body
+
+  const person = {
+    name: body.name,
+    number: body.number
+  }
+
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then(updatedPerson => {
+      response.json(updatedPerson)
+    })
+    .catch(error => console.log(error))
 })
 
 // PORT LISTENER
