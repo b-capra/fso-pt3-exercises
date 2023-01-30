@@ -13,8 +13,8 @@ app.use(express.static('build'))
 
 // MORGAN LOGGER
 
-morgan.token('data', (req) => {
-  const { body } = req
+morgan.token('data', (request, response) => {
+  const { body } = request
   if (Object.keys(body).length === 0) return
   return JSON.stringify(body)
 })
@@ -26,7 +26,7 @@ app.use(
 // ROUTES
 
 // Info
-app.get('/info', (response) => {
+app.get('/info', (request, response) => {
   let date = new Date()
   Person.find({}).then(people => {
     response.send(
@@ -36,7 +36,7 @@ app.get('/info', (response) => {
 })
 
 // Fetch All
-app.get('/api/persons', (response) => {
+app.get('/api/persons', (request, response) => {
   Person.find({}).then(people => {
     response.json(people)
   })
