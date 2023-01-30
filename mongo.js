@@ -40,8 +40,8 @@ if (process.argv.length === 3) {
 // New Entry
 if (process.argv.length === 5) {
   const nameRegex = /^[a-zA-Z,.'-\s]+$/
-  const numRegex = /^[0-9\-]+$/
-  
+  const numRegex = /^[0-9-]+$/
+
   if (!nameRegex.test(process.argv[3])) {
     console.log('Please provide a valid name')
     process.exit(1)

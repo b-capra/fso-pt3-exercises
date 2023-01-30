@@ -23,7 +23,7 @@ const personSchema = new mongoose.Schema({
   },
   number: {
     type: String,
-    validate: /^[0-9()\-]+$/,
+    validate: /^[0-9()-]+$/,
     minLength: 8,
     required: true
   }

@@ -13,8 +13,8 @@ app.use(express.static('build'))
 
 // MORGAN LOGGER
 
-morgan.token('data', (req, res) => {
-  const {body} = req
+morgan.token('data', (req) => {
+  const { body } = req
   if (Object.keys(body).length === 0) return
   return JSON.stringify(body)
 })
@@ -26,17 +26,17 @@ app.use(
 // ROUTES
 
 // Info
-app.get('/info', (request, response) => {
+app.get('/info', (response) => {
   let date = new Date()
   Person.find({}).then(people => {
     response.send(
-      `<b>Phonebook contains info for ${people.length} people</b><p>${date}</p>`  
+      `<b>Phonebook contains info for ${people.length} people</b><p>${date}</p>`
     )
   })
 })
 
 // Fetch All
-app.get('/api/persons', (request, response) => {
+app.get('/api/persons', (response) => {
   Person.find({}).then(people => {
     response.json(people)
   })
@@ -77,7 +77,7 @@ app.post('/api/persons', (request, response, next) => {
           name: body.name,
           number: body.number
         })
-      
+
         person.save()
           .then(newPerson => {
             response.json(newPerson)
@@ -93,7 +93,7 @@ app.put('/api/persons/:id', (request, response, next) => {
 
   Person.findByIdAndUpdate(
     request.params.id,
-    {name, number},
+    { name, number },
     { new: true, runValidators: true, context: 'query' }
   )
     .then(updatedPerson => {
@@ -104,7 +104,7 @@ app.put('/api/persons/:id', (request, response, next) => {
 
 // ERROR HANDLERS
 const unknownEndpoint = (request, response) => {
-  response.status(404).send({ error: 'Unknown endpoint'})
+  response.status(404).send({ error: 'Unknown endpoint' })
 }
 
 app.use(unknownEndpoint)
@@ -114,7 +114,7 @@ const errorHandler = (error, request, response, next) => {
   console.error(error.name)
 
   if (error.name === 'CastError') {
-    return response.status(400).send({ error: 'Malformatted ID'})
+    return response.status(400).send({ error: 'Malformatted ID' })
   } else if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message })
   }
